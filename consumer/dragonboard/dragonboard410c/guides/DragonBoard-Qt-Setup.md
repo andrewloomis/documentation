@@ -46,6 +46,8 @@ mkdir sysroot sysroot/usr
 rsync -avz linaro@10.42.0.61:/lib sysroot
 rsync -avz linaro@10.42.0.61:/usr/include sysroot/usr
 rsync -avz linaro@10.42.0.61:/usr/lib sysroot/usr
+rsync -avz linaro@10.42.0.61:/usr/local/include sysroot/usr/local
+rsync -avz linaro@10.42.0.61:/usr/local/lib sysroot/usr/local
 ```
 We need to make the symlinks in the sysroot to be relative. Download this script and run it with the "sysroot" directory as the argument.
 ```
@@ -176,14 +178,15 @@ cd qt5-build
 ```
 Run configure script in out-of-source build folder:
 
-**IMPORTANT: Change CROSS_COMPILE path to be the path to your "linaro" directory, i.e. change "/media/hdd/" to "/your-path-to-linaro/"**
+**IMPORTANT: Change SYSROOT to your sysroot directory"**
 ```
+export SYSROOT=~/dev/dragonboard/sysroot
 ../qt5/configure -release -opengl es2 -device linux-dragonboard \
--device-option CROSS_COMPILE=/media/hdd/linaro/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu- \
--sysroot /media/hdd/linaro/sysroot -opensource \
+-device-option CROSS_COMPILE=$SYSROOT/../gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu- \
+-sysroot $SYSROOT -opensource \
 -confirm-license -make libs -prefix /usr/local/qt5dragon \
--extprefix /media/hdd/linaro/qt5dragon \
--hostprefix /media/hdd/linaro/qt5-qmake -v -nomake examples -nomake tests
+-extprefix $SYSROOT/../qt5dragon \
+-hostprefix $SYSROOT/../qt5-qmake -v -nomake examples -nomake tests -no-use-gold-linker
 ```
 If the configure script runs without error, then compile and install. Replace the "8" in -j8 with however many threads your host PC has.
 ```
